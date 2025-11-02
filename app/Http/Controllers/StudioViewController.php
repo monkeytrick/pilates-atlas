@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CountriesStudioCount;
-use App\Models\Country;
+use App\Services\StudioService;
+use App\Services\CountryService;
 use App\Models\Studio;
 use App\Models\City;
 use Illuminate\Http\Request;
@@ -14,16 +14,13 @@ class StudioViewController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(StudioService $studios, CountryService $countries)
     {
         // Retrieve all studios with their associated city (separare table) using foreign key relationship
-        $studios = Studio::with('city:id,name')->get();
+        $studios = $studios->show_all();
 
         // Retrieve countries that have at least one associated studio
-        $countries = CountriesStudioCount::with('country:id,name')
-            ->where('count', '>', 0)
-            ->get()
-            ->pluck('country');
+        $countries = $countries->show_countries_with_studios();
 
         return view('index', compact('studios', 'countries'));
     }
@@ -47,40 +44,6 @@ class StudioViewController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
-    public function showCountry(Request $request) 
-    {
-        Log::info("showCountry called with id: " . $request->query('id'));
-
-        $id = $request->query('id');
-
-        $country = Country::find($id)->name;
-
-        Log::info("Country is " . $country);
-        
-        if (!$country) {
-            Log::warning("Country not found with id: " . $id);
-            // Handle country not found, e.g., redirect or show error
-            return;
-        }
-
-        // Retrieve studios by country ID
-        $studios = Studio::whereHas('city.country', function ($query) use ($id) {    
-            $query->where('id', $id);
-            })
-            ->with('city')
-            ->paginate(10)
-            ->appends(['id' => $id]); // Preserve query parameter in pagination links
-        
-        // Cities for dropdown
-        $cities = City::where('country_id', $id)
-                 ->orderBy('name')
-                 ->get(['id', 'name']);
-
-        Log::info("Number of studios found: " . $studios->count());
-
-        return view('country', compact('studios', 'country', 'cities'));    
-    }
 
     /**
      * Display a listing for a city.

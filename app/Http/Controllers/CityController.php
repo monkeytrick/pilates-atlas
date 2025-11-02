@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class CityController extends Controller
 {
     //
-    public function show_studios(Request $request) 
+    public function show_studios_for_city(Request $request) 
     {
         //
         Log::info("showCity called with id: " . $request->query('id'));

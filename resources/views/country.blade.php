@@ -846,7 +846,7 @@
                 <h1 style="font-size: 24px; font-weight: bold; margin: 0px 0px 5px; color: rgb(0, 0, 0);">Pilates Atlas</h1>
                 <p style="margin: 0px; font-size: 14px; color: rgb(102, 102, 102);">Worldwide Pilates studio directory</p>
             </div>
-            <h2>{{ $studios->total() }} studios found for {{ $country }}</h2>
+            <h2>{{ $studios->total() }} studios found for {{ $countryName }}</h2>
 
             <div style="background-color: rgb(240, 240, 240); padding: 15px; margin-bottom: 20px; border: 1px solid rgb(204, 204, 204);">
                 <form action="{{ route('city.show_studios') }}"  method="GET">

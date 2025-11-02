@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CountryService;
+use App\Services\CityService;
 use Illuminate\Http\Request;
-use App\Models\City;
 use App\Models\Country;
 use App\Models\Studio;
 use Illuminate\Support\Facades\Log;
@@ -21,40 +22,27 @@ class CountryController extends Controller
         /**
      * Display a listing of the resource.
      */
-    public function show_studios(Request $request) 
-    {
+    public function show_studios_for_country(Request $request, CountryService $country, CityService $city)
+    {   
+        // Get country ID from query parameters
+        $country_id = $request->query('id');
 
-        Log::info("showCountry called with id: " . $request->query('id'));
+        // Get country name or set default error message
+        $countryName = Country::find($country_id);
+        $countryName = $country ? $countryName->name : "Error with country name";
 
-        $id = $request->query('id');
+        // Get studios for the specified country
+        $studios = $country->show_studios_by_country($country_id);
 
-        $country = Country::find($id)->name;
+        // Get city names for dropdown
+        $cities = $city->getCitiesByCountryId($country_id);
 
-        Log::info("Country is " . $country);
-        
-        if (!$country) {
-            Log::warning("Country not found with id: " . $id);
-            // Handle country not found, e.g., redirect or show error
-            return;
-        }
 
-        // Retrieve studios by country ID
-        $studios = Studio::whereHas('city.country', function ($query) use ($id) {    
-            $query->where('id', $id);
-            })
-            ->with('city')
-            ->paginate(10)
-            ->appends(['id' => $id]); // Preserve query parameter in pagination links
-        
-        // Cities for dropdown
-        $cities = City::where('country_id', $id)
-                 ->orderBy('name')
-                 ->get(['id', 'name']);
+        return view('country', compact('studios', 'countryName', 'cities'));  
 
-        Log::info("Number of studios found: " . $studios->count());
-
-        return view('country', compact('studios', 'country', 'cities'));  
     }
+
+
 
 
     /**

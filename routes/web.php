@@ -3,16 +3,16 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CountryController; 
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\StudioViewController;
-use App\Models\Studio;
 
 Route::get('/', [StudioViewController::class, 'index'])->name('home');
 
 // Return studios for a specific country
-Route::get('/country', [CountryController::class, 'show_studios'])->name('country.show_studios');
+Route::get('/country', [CountryController::class, 'show_studios_for_country'])->name('country.show_studios');
 
 // Return studios for a specific city   
-Route::get('/city', [CountryController::class, 'show_studios'])->name('city.show_studios');
+Route::get('/city', [CityController::class, 'show_studios_for_city'])->name('city.show_studios');
 
 //Test results are returned for all countries.
 
