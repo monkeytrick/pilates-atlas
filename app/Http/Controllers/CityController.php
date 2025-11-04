@@ -5,35 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\City;
 use App\Models\Studio;  
 use Illuminate\Http\Request;
+use App\Services\CityService;
 use Illuminate\Support\Facades\Log;
 
 class CityController extends Controller
 {
-    //
-    public function show_studios_for_city(Request $request) 
+    protected $cityService;
+
+    public function __construct(CityService $cityService)
     {
-        //
-        Log::info("showCity called with id: " . $request->query('id'));
+        $this->cityService = $cityService;
+    }
 
-        $id = $request->query('id');
+    // May be used several times to get city name by ID
+    public function show_cityName($id) {
 
-        $city = City::find($id)->name;
+        return $this->cityService->show_city_name($id);
+    }
 
-        Log::info("City is " . $city);
+    public function show_studios_for_city(Request $request)
+    {
+        Log::info("show_studios_for_city called with id: " . $request->query('id'));
         
-        if (!$city) {
-            Log::warning("City not found with id: " . $id);
-            // Handle city not found, e.g., redirect or show error
-            return;
-        }
+        $studios = $this->cityService->show_studios_for_city($request->query('id'));
 
-        // Retrieve studios by city ID
-        $studios = Studio::whereHas('city', function ($query) use ($id) {    
-            $query->where('id', $id);
-        })->with('city')->get();
+        $cityName = $this->show_cityName($request->query('id')); 
 
-        Log::info("Number of studios found: " . $studios->count());
-
-        return view('city', compact('studios', 'city'));    
+        return view('city-results', compact('studios', 'cityName'));
+ 
     }
 }

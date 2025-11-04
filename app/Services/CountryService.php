@@ -36,7 +36,8 @@ class CountryService
             return Studio::whereHas('city.country', function ($query) use ($country_id) {    
                 $query->where('id', $country_id);})
                        ->with(['city.country:id,name'])
-                       ->paginate(10);
+                       ->paginate(10)
+                       ->appends(['id' => $country_id]);
 
         } catch (\Exception $e) {
             // Handle exception, e.g., log error

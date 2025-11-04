@@ -38,7 +38,7 @@ class CountryController extends Controller
         $cities = $city->getCitiesByCountryId($country_id);
 
 
-        return view('country', compact('studios', 'countryName', 'cities'));  
+        return view('country-results', compact('studios', 'countryName', 'cities'));  
 
     }
 
